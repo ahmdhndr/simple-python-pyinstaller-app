@@ -1,8 +1,16 @@
-node {
-  docker.image('node:16-buster-slim').inside('-p 3000:3000') {
-    stage('Build') {
-      checkout scm
-      sh 'npm install'
-      }
-  }
+pipeline {
+    agent none 
+    stages {
+        stage('Build') { 
+            agent {
+                docker {
+                    image 'python:2-alpine' 
+                }
+            }
+            steps {
+                sh 'python -m py_compile sources/add2vals.py sources/calc.py' 
+                stash(name: 'compiled-results', includes: 'sources/*.py*') 
+            }
+        }
+    }
 }
